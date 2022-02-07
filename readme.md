@@ -25,6 +25,7 @@ editorial content. It stores meta data in a Sqlite database.
 
 - Update Swagger document `fin exec php artisan update:swagger`
 
+- Cleanup project `fin project remove`
 
 [Installation instructions](./docs/installation.md)
 

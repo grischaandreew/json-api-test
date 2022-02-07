@@ -44,7 +44,9 @@ copy_settings_file()
 copy_settings ()
 {
 	cat ${PROJECT_ROOT}/.docksal/settings/env.default > ${PROJECT_ROOT}/.env
-	cd "$PROJECT_ROOT"
+	mkdir -p "$PROJECT_ROOT/storage/framework/cache"
+	mkdir -p "$PROJECT_ROOT/storage/framework/sessions"
+	mkdir -p "$PROJECT_ROOT/storage/framework/views"
 }
 
 # Install site
