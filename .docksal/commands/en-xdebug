@@ -1,0 +1,2 @@
+fin config set --env=local XDEBUG_ENABLED=1
+fin restart cli

@@ -1,0 +1,2512 @@
+swagger: '2.0'
+info:
+  title: inform-me-editorial-api
+  version: "0.0.0-dev"
+  contact:
+    name: andreew GmbH
+    url: http://www.andreew.ag
+  description: |
+    *Living Document / WORK IN PROGRESS*
+    Me-Media Editorial API Documentation
+    ### General Notes
+    API is following the [JSONAPI specifications](http://jsonapi.org/).
+    API is specified at https://docs.google.com/document/d/128bL7055Op8EkCzC_tP5YTrrX3VRs2l-v7m9pMjLYjs.
+    
+    ### About this Document
+    Read this Document using the [Swagger Online Editor](https://editor.swagger.io/).
+    Responses, models, attributes and descriptions may not exist, are incomplete or planned features:
+    | TAG        | Description |
+    |------------|-------------|
+    | PLANNED    | planned features, blueprint for upcoming implementations |
+    | INCOMPLETE | allready started feature, but incomplete                 |
+    | TODO       | Things that must be cleared, questionable things         |
+# URLS, Shemes and base URIs
+schemes:
+  - https
+  - http
+servers:
+  - url: https://editorial-dev0.media.andreew.ag/
+    description: (latest/straight edge version of event api)
+  - url: http://editorial-qa0.media.andreew.ag/
+    description: (latest stable version of event api)
+produces:
+  - application/vnd.api+json
+
+# re-usable Parameters
+parameters:
+  AcceptLanguage:
+    in: query
+    name: lang
+    type: string
+    required: false
+    description: |
+      locale id which is a ISO-639-1 2 letter code and optional Region designator in the format: `de-DE`.
+  PageLimit:
+    in: query
+    name: page[size]
+    required: false
+    type: number
+    format: int64
+    description: |
+      http://jsonapi.org/format/#fetching-pagination
+  PageNumber:
+    in: query
+    name: page[number]
+    required: false
+    type: number
+    format: int64
+    description: |
+      http://jsonapi.org/format/#fetching-pagination
+  PageSize:
+    in: query
+    name: page[size]
+    required: false
+    type: number
+    format: int64
+    description: |
+      http://jsonapi.org/format/#fetching-pagination
+
+# Model definitions
+definitions:
+
+  magazine:
+    type: object
+    description: |
+       Magazine pages on Mercedes me media comprise the home magazine and event special pages. https://docs.google.com/document/d/128bL7055Op8EkCzC_tP5YTrrX3VRs2l-v7m9pMjLYjs
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          identifier:
+            type: string
+            description: nullable|string|between:1,255
+          url-slug:
+            type: string
+            description: nullable|string|between:1,255
+          publication-date:
+            type: string
+            description: nullable|date
+      relationships:
+        type: object
+        properties:
+          sections:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/section'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+
+  section:
+    type: object
+    description: |
+       Magazine pages are composed of sections, which are full-width areas on the page stacked on top of each other. The number of teasers and their arrangement within the section depend on the section type. https://docs.google.com/document/d/128bL7055Op8EkCzC_tP5YTrrX3VRs2l-v7m9pMjLYjs
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          title:
+            type: string
+            description: nullable|string|between:1,255
+          section-headlines:
+            type: string
+            description: ''
+          section-type:
+            type: string
+            description: ''
+          publication-date:
+            type: string
+            description: nullable|date
+      relationships:
+        type: object
+        properties:
+          teasers:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/teaser'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+
+  teaser:
+    type: object
+    description: |
+       Content on Mercedes me media magazine pages is displayed in the form of clickable rectangular tiles known as teasers. https://docs.google.com/document/d/128bL7055Op8EkCzC_tP5YTrrX3VRs2l-v7m9pMjLYjs
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          title:
+            type: string
+            description: nullable|string|between:1,255
+          publication-date:
+            type: string
+            description: nullable|date
+      relationships:
+        type: object
+        properties:
+          article:
+            type: object
+            description: '#/definitions/article'
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+
+          images:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/image'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+          videos:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/video'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+          fuel-labels:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/fuel-label'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+
+  article:
+    type: object
+    description: |
+       Clicking on a teaser opens up an article detail page with additional information. Article detail pages contain a full-width header image at the top of the page. https://docs.google.com/document/d/128bL7055Op8EkCzC_tP5YTrrX3VRs2l-v7m9pMjLYjs
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          origin-id:
+            type: string
+            description: nullable|string|between:0,255
+          url-slug:
+            type: string
+            description: nullable|string|between:0,255
+          display-date:
+            type: string
+            description: nullable|date
+          read-count:
+            type: number
+            description: nullable|integer
+          download-count:
+            type: number
+            description: nullable|integer
+          share-count:
+            type: number
+            description: nullable|integer
+          title:
+            type: string
+            description: nullable|string
+          seo-title:
+            type: string
+            description: nullable|string
+          topic:
+            type: string
+            description: nullable|string
+          excerpt:
+            type: string
+            description: nullable|string
+          content:
+            type: string
+            description: nullable|string
+          formatted-content:
+            type: string
+            description: nullable|string
+          location:
+            type: string
+            description: nullable|string|between:0,255
+          source:
+            type: string
+            description: nullable|string|between:0,255
+          og-title:
+            type: string
+            description: nullable|string
+          og-image:
+            type: string
+            description: nullable|string
+          og-description:
+            type: string
+            description: nullable|string
+          localised-read-count:
+            type: number
+            description: nullable|integer
+          localised-download-count:
+            type: number
+            description: nullable|integer
+          localised-share-count:
+            type: number
+            description: nullable|integer
+          publication-date:
+            type: string
+            description: nullable|date
+      relationships:
+        type: object
+        properties:
+          contact-persons:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/contact-person'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+          images:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/image'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+          documents:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/document'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+          videos:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/video'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+          audios:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/audio'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+          fuel-labels:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/fuel-label'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+          sections:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/section'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+
+  language:
+    type: object
+    description: |
+      
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          language-name:
+            type: string
+            description: nullable|string|between:1,255
+          country-name:
+            type: string
+            description: nullable|string|between:1,255
+          iso-language:
+            type: string
+            description: nullable|string|between:1,2
+          iso-country:
+            type: string
+            description: nullable|string|between:1,2
+          is-default:
+            type: string
+            description: ''
+          publication-date:
+            type: string
+            description: nullable|date
+
+  fuel-label:
+    type: object
+    description: |
+      
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          text:
+            type: string
+            description: nullable|string
+          publication-date:
+            type: string
+            description: nullable|date
+
+  contact-person:
+    type: object
+    description: |
+      
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          firstname:
+            type: string
+            description: required|string|between:1,255
+          lastname:
+            type: string
+            description: required|string|between:1,255
+          title:
+            type: string
+            description: nullable|string|between:1,255
+          position:
+            type: string
+            description: nullable|string|between:1,255
+          email:
+            type: string
+            description: nullable|string|min:1
+          phone:
+            type: string
+            description: nullable|string|min:1
+          mobile:
+            type: string
+            description: nullable|string|min:1
+          fax:
+            type: string
+            description: nullable|string|min:1
+          publication-date:
+            type: string
+            description: nullable|date
+      relationships:
+        type: object
+        properties:
+          image:
+            type: object
+            description: '#/definitions/image'
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+
+
+  medium:
+    type: object
+    description: |
+       Magazine pages on Mercedes me media comprise the home magazine and event special pages. https://docs.google.com/document/d/128bL7055Op8EkCzC_tP5YTrrX3VRs2l-v7m9pMjLYjs
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          publishing-id:
+            type: string
+            description: nullable|string|between:0,255
+          media-type:
+            type: string
+            description: required|string|between:0,255
+          publication-date:
+            type: string
+            description: nullable|date
+          storage-uuid:
+            type: string
+            description: nullable|string|between:0,255
+          filesize:
+            type: number
+            description: nullable|integer
+          page-count:
+            type: number
+            description: nullable|integer
+          width:
+            type: number
+            description: nullable|integer
+          height:
+            type: number
+            description: nullable|integer
+          ratios:
+            type: string
+            description: ''
+          duration:
+            type: number
+            description: nullable|integer
+          mars-publish-id:
+            type: string
+            description: nullable|string|between:0,255
+          mars-shelf-number:
+            type: string
+            description: nullable|string|between:0,255
+          mars-archive-number:
+            type: string
+            description: nullable|string|between:0,255
+          title:
+            type: string
+            description: nullable|string|between:0,255
+          caption:
+            type: string
+            description: nullable|string
+          description:
+            type: string
+            description: nullable|string
+          og-title:
+            type: string
+            description: nullable|string
+          og-image:
+            type: string
+            description: nullable|string
+          og-description:
+            type: string
+            description: nullable|string
+          content-language:
+            type: string
+            description: nullable|string|between:0,20
+      relationships:
+        type: object
+        properties:
+          file-type:
+            type: object
+            description: '#/definitions/file-type'
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+
+          copyrights:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/copyright'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+          filter-categories:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/filter-category'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+          fuel-labels:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/fuel-label'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+
+  file-type:
+    type: object
+    description: |
+      
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          name:
+            type: string
+            description: nullable|string|between:1,255
+          mime-types:
+            type: string
+            description: ''
+          file-extensions:
+            type: string
+            description: ''
+          publication-date:
+            type: string
+            description: nullable|date
+
+  filter-category:
+    type: object
+    description: |
+      
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          name:
+            type: string
+            description: nullable|string|between:1,255
+          publication-date:
+            type: string
+            description: nullable|date
+
+  copyright:
+    type: object
+    description: |
+      
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          description:
+            type: string
+            description: nullable|string
+          owner:
+            type: string
+            description: nullable|string|between:1,255
+          year:
+            type: number
+            description: nullable|integer
+          publication-date:
+            type: string
+            description: nullable|date
+
+  social-post:
+    type: object
+    description: |
+      
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      attributes:
+        type: object
+        properties:
+          origin-id:
+            type: string
+            description: required|string|between:1,255
+          origin-url:
+            type: string
+            description: required|string|between:1,755
+          title:
+            type: string
+            description: required|string|between:1,255
+          content:
+            type: string
+            description: required|string|min:1
+          source:
+            type: string
+            description: required|string|between:1,255
+          publication-date:
+            type: string
+            description: required|string|min:1
+      relationships:
+        type: object
+        properties:
+          language:
+            type: object
+            description: '#/definitions/language'
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+
+          media:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  description: '#/definitions/medium'
+                  properties:
+                    id:
+                      type: string
+                    type:
+                      type: string
+# paths
+paths:
+  /api/v1/magazines:
+      get:
+        summary: list of magazines        
+        description: lists magazines        
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: 'filters[id]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[identifier]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[url-slug]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: sort
+              required: false
+              type: string
+              in: query
+              description: |
+                - updated-at
+                - publication-date
+                - identifier
+            - name: include
+              required: false
+              type: string
+              in: query
+              description: |
+                - sections
+                - sections.teasers
+                - sections.teasers.images
+                - sections.teasers.videos
+                - sections.teasers.media
+                - sections.teasers.fuel-labels
+                - sections.teasers.articles
+                - sections.teasers.filter-categories
+                - sections.teasers.articles.audios
+                - sections.teasers.articles.contact-people
+                - sections.teasers.articles.documents
+                - sections.teasers.articles.fuel-labels
+        responses:
+          200:
+            description: list of magazines
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/magazine'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      post:
+        summary: create new magazine      
+        description: create magazine      
+        parameters:
+          - name: magazines      
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/magazine'
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/magazines/{id}:
+      get:
+        summary: get one magazine object
+    
+        description: show one magazine    
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: id
+              in: path
+              required: true
+              type: string
+              description: id or url-slug of object
+            - name: include
+              required: false
+              type: string
+              in: query
+              description: |
+                - sections
+                - sections.teasers
+                - sections.teasers.images
+                - sections.teasers.videos
+                - sections.teasers.media
+                - sections.teasers.fuel-labels
+                - sections.teasers.articles
+                - sections.teasers.filter-categories
+                - sections.teasers.articles.audios
+                - sections.teasers.articles.contact-people
+                - sections.teasers.articles.documents
+                - sections.teasers.articles.fuel-labels
+        responses:
+          200:
+            description:  magazines
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/definitions/magazine'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      patch:
+        summary: update magazine  
+        description: update magazine  
+        parameters:
+          - name: magazines
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/magazine'
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id or url-slug of object
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+      delete:
+        summary: remove magazine  
+        description: remove magazine  
+        parameters:
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id or url-slug of object
+        responses:
+          200:
+            description: deleted
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/sections:
+      get:
+        summary: list of sections        
+        description: lists sections        
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: 'filters[id]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[title]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[section-headlines]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[section-type]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: sort
+              required: false
+              type: string
+              in: query
+              description: |
+                - updated-at
+                - publication-date
+                - section-type
+            - name: include
+              required: false
+              type: string
+              in: query
+              description: |
+                - teasers
+        responses:
+          200:
+            description: list of sections
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/section'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      post:
+        summary: create new section      
+        description: create section      
+        parameters:
+          - name: sections      
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/section'
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/sections/{id}:
+      get:
+        summary: get one section object
+    
+        description: show one section    
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: id
+              in: path
+              required: true
+              type: string
+              description: id of object 
+            - name: include
+              required: false
+              type: string
+              in: query
+              description: |
+                - teasers
+        responses:
+          200:
+            description:  sections
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/definitions/section'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      patch:
+        summary: update section  
+        description: update section  
+        parameters:
+          - name: sections
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/section'
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+      delete:
+        summary: remove section  
+        description: remove section  
+        parameters:
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: deleted
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/teasers:
+      get:
+        summary: list of teasers        
+        description: lists teasers        
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: 'filters[title]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: sort
+              required: false
+              type: string
+              in: query
+              description: |
+                - updated-at
+                - publication-date
+            - name: include
+              required: false
+              type: string
+              in: query
+              description: |
+                - article
+                - fuel-labels
+                - images
+                - videos
+        responses:
+          200:
+            description: list of teasers
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/teaser'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      post:
+        summary: create new teaser      
+        description: create teaser      
+        parameters:
+          - name: teasers      
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/teaser'
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/teasers/{id}:
+      get:
+        summary: get one teaser object
+    
+        description: show one teaser    
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: id
+              in: path
+              required: true
+              type: string
+              description: id of object 
+            - name: include
+              required: false
+              type: string
+              in: query
+              description: |
+                - article
+                - fuel-labels
+                - images
+                - videos
+        responses:
+          200:
+            description:  teasers
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/definitions/teaser'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      patch:
+        summary: update teaser  
+        description: update teaser  
+        parameters:
+          - name: teasers
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/teaser'
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+      delete:
+        summary: remove teaser  
+        description: remove teaser  
+        parameters:
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: deleted
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/articles:
+      get:
+        summary: list of articles        
+        description: lists articles        
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: 'filters[id]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[origin-id]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[url-slug]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[title]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[topic]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[excerpt]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[content]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[location]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[source]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[search]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: sort
+              required: false
+              type: string
+              in: query
+              description: |
+                - updated-at
+                - publication-date
+                - origin-id
+                - url-slug
+                - read-count
+                - download-count
+                - share-count
+            - name: include
+              required: false
+              type: string
+              in: query
+              description: |
+                - audios
+                - contact-people
+                - documents
+                - fuel-labels
+                - images
+                - videos
+                - media
+        responses:
+          200:
+            description: list of articles
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/article'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      post:
+        summary: create new article      
+        description: create article      
+        parameters:
+          - name: articles      
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/article'
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/articles/{id}:
+      get:
+        summary: get one article object
+    
+        description: show one article    
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: id
+              in: path
+              required: true
+              type: string
+              description: id or url-slug of object
+            - name: include
+              required: false
+              type: string
+              in: query
+              description: |
+                - audios
+                - contact-people
+                - documents
+                - fuel-labels
+                - images
+                - videos
+                - media
+        responses:
+          200:
+            description:  articles
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/definitions/article'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      patch:
+        summary: update article  
+        description: update article  
+        parameters:
+          - name: articles
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/article'
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id or url-slug of object
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+      delete:
+        summary: remove article  
+        description: remove article  
+        parameters:
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id or url-slug of object
+        responses:
+          200:
+            description: deleted
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/languages:
+      get:
+        summary: list of languages        
+        description: lists languages        
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: 'filters[id]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[is-default]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: sort
+              required: false
+              type: string
+              in: query
+              description: |
+                - updated-at
+                - publication-date
+                - language-name
+        responses:
+          200:
+            description: list of languages
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/language'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      post:
+        summary: create new language      
+        description: create language      
+        parameters:
+          - name: languages      
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/language'
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/languages/{id}:
+      get:
+        summary: get one language object
+    
+        description: show one language    
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: id
+              in: path
+              required: true
+              type: string
+              description: id of object 
+        responses:
+          200:
+            description:  languages
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/definitions/language'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      patch:
+        summary: update language  
+        description: update language  
+        parameters:
+          - name: languages
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/language'
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+      delete:
+        summary: remove language  
+        description: remove language  
+        parameters:
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: deleted
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/fuel-labels:
+      get:
+        summary: list of fuel-labels        
+        description: lists fuel-labels        
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: 'filters[id]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[text]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: sort
+              required: false
+              type: string
+              in: query
+              description: |
+                - updated-at
+                - publication-date
+        responses:
+          200:
+            description: list of fuel-labels
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/fuel-label'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      post:
+        summary: create new fuel-label      
+        description: create fuel-label      
+        parameters:
+          - name: fuel-labels      
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/fuel-label'
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/fuel-labels/{id}:
+      get:
+        summary: get one fuel-label object
+    
+        description: show one fuel-label    
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: id
+              in: path
+              required: true
+              type: string
+              description: id of object 
+        responses:
+          200:
+            description:  fuel-labels
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/definitions/fuel-label'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      patch:
+        summary: update fuel-label  
+        description: update fuel-label  
+        parameters:
+          - name: fuel-labels
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/fuel-label'
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+      delete:
+        summary: remove fuel-label  
+        description: remove fuel-label  
+        parameters:
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: deleted
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/contact-people:
+      get:
+        summary: list of contact-people        
+        description: lists contact-people        
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: 'filters[id]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[firstname]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[lastname]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[title]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[position]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[email]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[phone]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[mobile]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[fax]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: sort
+              required: false
+              type: string
+              in: query
+              description: |
+                - updated-at
+                - publication-date
+        responses:
+          200:
+            description: list of contact-people
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/contact-person'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      post:
+        summary: create new contact-person      
+        description: create contact-person      
+        parameters:
+          - name: contact-people      
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/contact-person'
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/contact-people/{id}:
+      get:
+        summary: get one contact-person object
+    
+        description: show one contact-person    
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: id
+              in: path
+              required: true
+              type: string
+              description: id of object 
+        responses:
+          200:
+            description:  contact-people
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/definitions/contact-person'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      patch:
+        summary: update contact-person  
+        description: update contact-person  
+        parameters:
+          - name: contact-people
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/contact-person'
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+      delete:
+        summary: remove contact-person  
+        description: remove contact-person  
+        parameters:
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: deleted
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/media:
+      get:
+        summary: list of media        
+        description: lists media        
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: 'filters[id]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[publishing-id]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[media-type]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[title]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[caption]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[description]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[transcription]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[page-count]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[width]'
+              required: false
+              type: string
+              in: query
+              description: integer
+            - name: 'filters[height]'
+              required: false
+              type: string
+              in: query
+              description: integer
+            - name: 'filters[mars-archive-number]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[mars-publish-id]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[mars-shelf-number]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[duration]'
+              required: false
+              type: string
+              in: query
+              description: integer
+            - name: 'filters[content-language]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: sort
+              required: false
+              type: string
+              in: query
+              description: |
+                - updated-at
+                - publication-date
+                - media-type
+                - page-count
+                - filesize
+                - width
+                - height
+                - duration
+            - name: include
+              required: false
+              type: string
+              in: query
+              description: |
+                - file-type
+                - filter-categories
+                - copyrights
+                - fuel-labels
+        responses:
+          200:
+            description: list of media
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/medium'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      post:
+        summary: create new medium      
+        description: create medium      
+        parameters:
+          - name: media      
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/medium'
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/media/{id}:
+      get:
+        summary: get one medium object
+    
+        description: show one medium    
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: id
+              in: path
+              required: true
+              type: string
+              description: id of object 
+            - name: include
+              required: false
+              type: string
+              in: query
+              description: |
+                - file-type
+                - filter-categories
+                - copyrights
+                - fuel-labels
+        responses:
+          200:
+            description:  media
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/definitions/medium'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      patch:
+        summary: update medium  
+        description: update medium  
+        parameters:
+          - name: media
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/medium'
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+      delete:
+        summary: remove medium  
+        description: remove medium  
+        parameters:
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: deleted
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/file-types:
+      get:
+        summary: list of file-types        
+        description: lists file-types        
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: 'filters[id]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[name]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[mime-types]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[file-extensions]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: sort
+              required: false
+              type: string
+              in: query
+              description: |
+                - updated-at
+                - publication-date
+                - mime-types
+                - file-extensions
+        responses:
+          200:
+            description: list of file-types
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/file-type'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      post:
+        summary: create new file-type      
+        description: create file-type      
+        parameters:
+          - name: file-types      
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/file-type'
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/file-types/{id}:
+      get:
+        summary: get one file-type object
+    
+        description: show one file-type    
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: id
+              in: path
+              required: true
+              type: string
+              description: id of object 
+        responses:
+          200:
+            description:  file-types
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/definitions/file-type'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      patch:
+        summary: update file-type  
+        description: update file-type  
+        parameters:
+          - name: file-types
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/file-type'
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+      delete:
+        summary: remove file-type  
+        description: remove file-type  
+        parameters:
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: deleted
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/filter-categories:
+      get:
+        summary: list of filter-categories        
+        description: lists filter-categories        
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: 'filters[id]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[name]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: sort
+              required: false
+              type: string
+              in: query
+              description: |
+                - updated-at
+                - publication-date
+        responses:
+          200:
+            description: list of filter-categories
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/filter-category'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      post:
+        summary: create new filter-category      
+        description: create filter-category      
+        parameters:
+          - name: filter-categories      
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/filter-category'
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/filter-categories/{id}:
+      get:
+        summary: get one filter-category object
+    
+        description: show one filter-category    
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: id
+              in: path
+              required: true
+              type: string
+              description: id of object 
+        responses:
+          200:
+            description:  filter-categories
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/definitions/filter-category'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      patch:
+        summary: update filter-category  
+        description: update filter-category  
+        parameters:
+          - name: filter-categories
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/filter-category'
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+      delete:
+        summary: remove filter-category  
+        description: remove filter-category  
+        parameters:
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: deleted
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/copyrights:
+      get:
+        summary: list of copyrights        
+        description: lists copyrights        
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: 'filters[id]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[description]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[owner]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[year]'
+              required: false
+              type: string
+              in: query
+              description: integer
+            - name: sort
+              required: false
+              type: string
+              in: query
+              description: |
+                - updated-at
+                - publication-date
+                - year
+        responses:
+          200:
+            description: list of copyrights
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/copyright'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      post:
+        summary: create new copyright      
+        description: create copyright      
+        parameters:
+          - name: copyrights      
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/copyright'
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/copyrights/{id}:
+      get:
+        summary: get one copyright object
+    
+        description: show one copyright    
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: id
+              in: path
+              required: true
+              type: string
+              description: id of object 
+        responses:
+          200:
+            description:  copyrights
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/definitions/copyright'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      patch:
+        summary: update copyright  
+        description: update copyright  
+        parameters:
+          - name: copyrights
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/copyright'
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+      delete:
+        summary: remove copyright  
+        description: remove copyright  
+        parameters:
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: deleted
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/social-posts:
+      get:
+        summary: list of social-posts        
+        description: lists social-posts        
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: 'filters[id]'
+              required: false
+              type: string
+              in: query
+              description: ''
+            - name: 'filters[origin-id]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[origin-url]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[title]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[content]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: 'filters[source]'
+              required: false
+              type: string
+              in: query
+              description: string|min:1
+            - name: sort
+              required: false
+              type: string
+              in: query
+              description: |
+                - updated-at
+                - publication-date
+                - origin-id
+                - source
+            - name: include
+              required: false
+              type: string
+              in: query
+              description: |
+                - language
+                - media
+        responses:
+          200:
+            description: list of social-posts
+            schema:
+              type: object
+              properties:
+                data:
+                  type: array
+                  items:
+                    $ref: '#/definitions/social-post'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      post:
+        summary: create new social-post      
+        description: create social-post      
+        parameters:
+          - name: social-posts      
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/social-post'
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+  /api/v1/social-posts/{id}:
+      get:
+        summary: get one social-post object
+    
+        description: show one social-post    
+        parameters:
+            - $ref: '#/parameters/AcceptLanguage'
+            - $ref: '#/parameters/PageLimit'
+            - $ref: '#/parameters/PageNumber'
+            - $ref: '#/parameters/PageSize'
+            - name: id
+              in: path
+              required: true
+              type: string
+              description: id of object 
+            - name: include
+              required: false
+              type: string
+              in: query
+              description: |
+                - language
+                - media
+        responses:
+          200:
+            description:  social-posts
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/definitions/social-post'
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected error
+      patch:
+        summary: update social-post  
+        description: update social-post  
+        parameters:
+          - name: social-posts
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/social-post'
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: created
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+      delete:
+        summary: remove social-post  
+        description: remove social-post  
+        parameters:
+          - name: id
+            in: path
+            required: true
+            type: string
+            description: id of object 
+        responses:
+          200:
+            description: deleted
+          401:
+            description: Unauthorized
+          default:
+            description: Unexpected Error
+    

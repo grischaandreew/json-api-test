@@ -1,0 +1,38 @@
+version: "2.1"
+
+services:
+  cli:
+    extends:
+      file: ${HOME}/.docksal/stacks/services.yml
+      service: cli
+    volumes:
+      - profiler:/tmp/profiles
+    environment:
+      # Pass additional variables (used in custom commands, e.g. init-site) from host to cli
+      - COMPOSER_AUTH
+      - ENVIRONMENT
+      - DB_NAME
+      - DB_USER
+      - DB_PASSWORD
+      - DB_HOST
+  pma:
+    hostname: pma
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=${MYSQL_ROOT_PASSWORD:-root}
+    labels:
+      - io.docksal.virtual-host=pma.${VIRTUAL_HOST}
+  webgrind:
+    hostname: grind
+    image: jokkedk/webgrind
+    labels:
+      - io.docksal.virtual-host=profiler.${VIRTUAL_HOST}
+    volumes:
+      - profiler:/tmp
+volumes:
+  profiler:
+    driver_opts:
+      type: tmpfs
+      device: tmpfs

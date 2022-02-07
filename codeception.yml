@@ -1,0 +1,22 @@
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/_data
+    support: tests/_support
+#    envs: tests/_envs
+actor_suffix: Tester
+coverage:
+    remote: false
+    enabled: true
+    include:
+        - app/*
+    exclude:
+        - app/Translatable.php
+        - app/UuidForKey.php
+        - app/Console/*
+        - app/JsonApi/BaseAdapter.php
+settings:
+    bootstrap: _bootstrap.php
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed

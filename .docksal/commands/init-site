@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+#: exec_target = cli
+
+## Initialize/reinstall site
+##
+## Usage: fin init-site
+
+# Abort if anything fails
+set -e
+
+#-------------------------- Settings --------------------------------
+
+# PROJECT_ROOT and DOCROOT are set as env variables in cli
+DOCROOT_PATH="${PROJECT_ROOT}/${DOCROOT}"
+
+#-------------------------- END: Settings --------------------------------
+
+#-------------------------- Helper functions --------------------------------
+
+# Copy a settings file.
+# Skips if the destination file already exists.
+# @param $1 source file
+# @param $2 destination file
+copy_settings_file()
+{
+	local source="$1"
+	local dest="$2"
+
+	if [[ ! -f $dest ]]; then
+		echo "Copying ${dest}..."
+		cp $source $dest
+	else
+		echo "${dest} already in place."
+		cp -f $source $dest
+	fi
+}
+
+#-------------------------- END: Helper functions --------------------------------
+
+#-------------------------- Functions --------------------------------
+
+# Copy env.default into PROJECT_ROOT/.env
+copy_settings ()
+{
+	cat ${PROJECT_ROOT}/.docksal/settings/env.default > ${PROJECT_ROOT}/.env
+	cd "$PROJECT_ROOT"
+}
+
+# Install site
+site_install ()
+{
+	cd ${PROJECT_ROOT}
+	composer install
+	php artisan migrate:fresh -q --force -n --seed
+}
+
+
+#-------------------------- END: Functions --------------------------------
+
+#-------------------------- Execution --------------------------------
+
+# Project initialization steps
+copy_settings
+time site_install
+
+
+#-------------------------- END: Execution --------------------------------
